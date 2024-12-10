@@ -1,9 +1,8 @@
-package briot.apis.v1;
+package briot;
 
-import briot.RiotErrorFactory;
-import briot.RiotHttpClient;
 import briot.models.Regions;
 import briot.models.RiotCredentials;
+import briot.models.errors.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -27,12 +26,58 @@ public class RiotHttpClientTests {
                 Arguments.arguments("TEST-API-KEY-FOUR", Regions.EUROPE, "europe-server")
         );
     }
+    static Stream<Arguments> statusCodeAndExceptionProvider() {
+        return Stream.of(
+            Arguments.of(
+                    300, RequestRedirectedException.class
+            ), Arguments.of(
+                    400, BadRequestException.class
+            ), Arguments.of(
+                    500, InternalServerErrorException.class
+            ), Arguments.of(
+                    401, BadRequestException.class
+            ), Arguments.of(
+                    403, BadRequestException.class
+            ), Arguments.of(
+                    404, NotFoundException.class
+            ), Arguments.of(
+                    405, BadRequestException.class
+            ), Arguments.of(
+                    415, BadRequestException.class
+            ), Arguments.of(
+                    429, BadRequestException.class
+            ), Arguments.of(
+                    502, InternalServerErrorException.class
+            ), Arguments.of(
+                    503, InternalServerErrorException.class
+            ),Arguments.of(
+                    504, InternalServerErrorException.class
+            )
+        );
+    }
     static String removeSlash(String route) {
         return route.startsWith("/") ? route.substring(1) : route;
     }
     @ParameterizedTest
+    @MethodSource("statusCodeAndExceptionProvider")
+    public void givenGetFailRequest_whenAnyRoute_thenRiotApiErrorShouldBeThrown(int statusCode, Class<? extends RiotApiError> exceptionClass) throws IOException, InterruptedException {
+        // Arrange
+        RiotCredentials creds = new RiotCredentials("TEST-API-KEY", Regions.AMERICAS);
+        RiotErrorFactory riotErrorFactory = new RiotErrorFactory();
+        HttpClient client = Mockito.mock(HttpClient.class);
+        RiotHttpClient riotHttpClient = new RiotHttpClient(creds, riotErrorFactory, client);
+        HttpResponse httpResponse = Mockito.mock(HttpResponse.class);
+        Mockito.when(httpResponse.statusCode()).thenReturn(statusCode);
+        Mockito.when(httpResponse.body()).thenReturn("{'test': 'test'}");
+        Mockito.when(client.send(
+                Mockito.any(HttpRequest.class),
+                Mockito.eq(HttpResponse.BodyHandlers.ofString())
+        )).then(invocationOnMock -> httpResponse);
+        // Act and Assert
+        Assertions.assertThrowsExactly(exceptionClass, () -> riotHttpClient.get("/test", TestDTO.class));
+    }
+    @ParameterizedTest
     @MethodSource("routesProvider")
-    // Create another test to test if the errors are by produced
     public void givenGetRequest_whenAnyRoute_thenRequestContaingXRiotTokenAndParameterRouteWasCalledWithCorrectRegionAndCorrectParsingAplied(
             String apiKey,
             Regions region,

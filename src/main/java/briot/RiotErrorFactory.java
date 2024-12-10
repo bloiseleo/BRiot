@@ -1,15 +1,15 @@
 package briot;
 
-import briot.models.errors.BadRequestException;
-import briot.models.errors.InternalServerErrorException;
-import briot.models.errors.RequestRedirectedException;
-import briot.models.errors.RiotApiError;
+import briot.models.errors.*;
 
 import java.net.http.HttpResponse;
 
 public class RiotErrorFactory {
     public RiotErrorFactory() {}
-    private BadRequestException createBadRequestException(String message) {
+    private BadRequestException createBadRequestException(String message, int statusCode) {
+        if (statusCode == 404) {
+            return new NotFoundException(message);
+        }
         return new BadRequestException(message);
     }
     private InternalServerErrorException createInternalServerErrorException(String message) {
@@ -23,7 +23,7 @@ public class RiotErrorFactory {
             return this.createRequestRedirectedException(response.body());
         }
         if (response.statusCode() >= 400 && response.statusCode() < 500) {
-            return this.createBadRequestException(response.body());
+            return this.createBadRequestException(response.body(), response.statusCode());
         }
         return this.createInternalServerErrorException(response.body());
     }
