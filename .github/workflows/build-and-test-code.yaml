@@ -6,6 +6,7 @@ on:
       - develop
 jobs:
   build:
+    name: Build and Test Code Job
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -17,3 +18,9 @@ jobs:
             distribution: 'temurin'
       - name: Build and Test Code
         run: mvn test
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports/**/*.txt
