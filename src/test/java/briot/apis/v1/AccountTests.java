@@ -1,0 +1,29 @@
+package briot.apis.v1;
+
+import briot.RiotHttpClient;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+public class AccountTests {
+    @Test //
+    public void givenGameNameAndTagLine_whenByRiotId_thenReturnAccountInformation() {
+        String gameName = "testGameName";
+        String tagLine = "testTagLine";
+        RiotHttpClient client = Mockito.mock(RiotHttpClient.class);
+        Account.AccountDTO response = new Account.AccountDTO("test-puuid", gameName, String.format("#%s", tagLine));
+        Account accountv1 = new Account(client);
+        Mockito.when(client.get(
+                String.format("/riot/account/v1/accounts/by-riot-id/%s/%s", gameName, tagLine),
+                Account.AccountDTO.class
+            )
+        ).then(invocationOnMock -> response);
+
+        var accountDTO = accountv1.byRiotId(gameName, tagLine);
+
+        Assertions.assertEquals(response.puuid(), accountDTO.puuid());
+        Assertions.assertEquals(response.gameName(), accountDTO.gameName());
+        Assertions.assertEquals(response.tagLine(), accountDTO.tagLine());
+        Mockito.verify(client, Mockito.times(1)).get(String.format("/riot/account/v1/accounts/by-riot-id/%s/%s", gameName, tagLine), Account.AccountDTO.class);
+    }
+}
