@@ -15,9 +15,9 @@ jobs:
         uses: actions/setup-java@v4
         with:
             java-version: '17'
-            distribution: 'temurin'
+            distribution: 'corretto'
       - name: Build and Test Code
-        run: mvn test
+        run: mvn compile test
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         with:
