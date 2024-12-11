@@ -8,6 +8,21 @@ import org.mockito.Mockito;
 
 public class AccountTests {
     @Test
+    public void givenPuuid_whenByPuuid_thenThrowNotFoundException() {
+        String puuid = "INVALID-PUUID";
+        RiotHttpClient client = Mockito.mock(RiotHttpClient.class);
+        Account account = new Account(client);
+        Mockito.when(
+                client.get(
+                        String.format("/riot/account/v1/accounts/by-puuid/%s", puuid),
+                        Account.AccountDTO.class
+                )
+        ).thenThrow(NotFoundException.class);
+
+        Assertions.assertThrows(NotFoundException.class, () -> account.byPuuid(puuid));
+        Mockito.verify(client, Mockito.times(1)).get(String.format("/riot/account/v1/accounts/by-puuid/%s", puuid), Account.AccountDTO.class);
+    }
+    @Test
     public void givenPuuid_whenByPuuid_thenReturnAccoutInformation() {
         String puuid = "PUUID-TEST";
         RiotHttpClient client = Mockito.mock(RiotHttpClient.class);
