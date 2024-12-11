@@ -13,6 +13,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Stash local changes (if any)
+        run: git stash --include-untracked || echo "No changes to stash"
       - name: Extract version from branch name
         env:
           GITHUB_REF: ${{ github.ref }}
