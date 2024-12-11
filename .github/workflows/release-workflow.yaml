@@ -16,6 +16,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
+          token: ${{ secrets.PATH }}
       - name: Stash local changes (if any)
         run: git stash --include-untracked || echo "No changes to stash"
       - name: Extract version from branch name
