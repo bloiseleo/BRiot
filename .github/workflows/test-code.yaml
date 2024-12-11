@@ -1,12 +1,13 @@
-name: Build and Test Code
-run-name: ${{ github.actor }} triggered Build and Test Code
+name: Test Code
+run-name: ${{ github.actor }} triggered Test Code Workflow
 on:
   pull_request:
     branches:
       - develop
+      - master
 jobs:
   build:
-    name: Build and Test Code Job
+    name: Test Code Job
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -18,7 +19,7 @@ jobs:
             distribution: 'corretto'
             cache: 'maven'
       - name: Build and Test Code
-        run: mvn compile test
+        run: mvn test
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         with:
