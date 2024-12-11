@@ -1,0 +1,37 @@
+name: Release Workflow
+run-name: Release Workflow triggered by ${{ github.actor }}
+on:
+  push:
+    branches:
+      - main
+jobs:
+  update-pom-version:
+    name: Update POM Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Extract version from branch name
+        env:
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+            echo "Branch reference: $GITHUB_REF"
+            BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
+            echo "Branch name: $BRANCH_NAME"
+            if [[ "$BRANCH_NAME" =~ ^release/([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+              VERSION="${BASH_REMATCH[1]}"
+              echo "Extracted version: $VERSION"
+              echo "VERSION=$VERSION" >> $GITHUB_ENV
+            else
+              echo "Branch does not match the expected release pattern."
+              exit 1
+            fi
+      - name: Update version in pom.xml
+        run: |
+            VERSION=$VERSION
+            echo "Updating the first <version> tag in pom.xml to: $VERSION"
+            sed -i "0,/<version>.*<\/version>/s|<version>.*</version>|<version>${VERSION}</version>|" pom.xml
+      - name: Commit Version Change
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Version release updated
