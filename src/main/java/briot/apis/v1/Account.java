@@ -12,4 +12,7 @@ public class Account {
     public AccountDTO byRiotId(String gameName, String tagLine) throws RiotApiError, RuntimeException {
         return client.get("/riot/account/v1/accounts/by-riot-id/" + gameName + "/" + tagLine, AccountDTO.class);
     }
+    public AccountDTO byPuuid(String puuid) throws RiotApiError, RuntimeException {
+        return client.get("/riot/account/v1/accounts/by-puuid/" + puuid, AccountDTO.class);
+    }
 }
