@@ -8,6 +8,27 @@ import org.mockito.Mockito;
 
 public class AccountTests {
     @Test
+    public void givenPuuid_whenByPuuid_thenReturnAccoutInformation() {
+        String puuid = "PUUID-TEST";
+        RiotHttpClient client = Mockito.mock(RiotHttpClient.class);
+        Account.AccountDTO response = new Account.AccountDTO(puuid, "GAME-NAME", "5423");
+        Account accountv1 = new Account(client);
+        Mockito.when(
+                client.get(
+                        String.format("/riot/account/v1/accounts/by-puuid/%s", puuid),
+                        Account.AccountDTO.class
+                )
+        ).then(invocationOnMock -> response);
+
+        var accountDTO = accountv1.byPuuid(puuid);
+
+        Assertions.assertNotNull(accountDTO);
+        Assertions.assertEquals(response.puuid(), accountDTO.puuid());
+        Assertions.assertEquals(response.gameName(), accountDTO.gameName());
+        Assertions.assertEquals(response.tagLine(), accountDTO.tagLine());
+        Mockito.verify(client, Mockito.times(1)).get(String.format("/riot/account/v1/accounts/by-puuid/%s", puuid), Account.AccountDTO.class);
+    }
+    @Test
     public void givenGameNameAndTagLine_whenByRiotId_thenReturnAccountInformation() {
         String gameName = "testGameName";
         String tagLine = "testTagLine";
