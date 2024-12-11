@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+permissions:
+  contents: write
 jobs:
   update-pom-version:
     name: Update POM Version
@@ -40,3 +42,4 @@ jobs:
         with:
           commit_message: Version release updated
           push_options: '--force'
+          skip_checkout: true
