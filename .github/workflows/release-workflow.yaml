@@ -1,9 +1,9 @@
 name: Release Workflow
 run-name: Release Workflow triggered by ${{ github.actor }}
 on:
-  push:
+  pull_request:
     branches:
-      - master
+      - release/**
 jobs:
   update-pom-version:
     name: Update POM Version
