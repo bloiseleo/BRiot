@@ -1,0 +1,27 @@
+name: Create Release and Tag
+run-name: Create Release and Tag triggered by ${{ github.actor }}
+on:
+  push:
+    branches:
+      - master
+jobs:
+  create-release-and-tag-job:
+    runs-on: ubuntu-latest
+    name: Create Release and Tag Job
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Extract version
+        run: |
+            VERSION=$(cat pom.xml | grep -E "<version>.*</version>" | sort | tail -n 1 | sed 's/<.*>\(.*\)<\/.*>/\1/g' | tr -d [:blank:])
+            echo "VERSION=$VERSION"
+            echo "::set-output name=version::$VERSION"
+      - name: Create Release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.extract_version.outputs.version }}
+          release_name: ${{ steps.extract_version.outputs.version }}
+          draft: false
+          prerelease: false
