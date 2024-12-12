@@ -1,6 +1,7 @@
 package briot.apis.v1;
 
 import briot.RiotHttpClient;
+import briot.helpers.URIHelpers;
 import briot.models.Regions;
 import briot.models.ShortRegions;
 import briot.models.errors.NotFoundException;
@@ -16,7 +17,10 @@ public class AccountTests {
         String puuid = "INVALID-PUUID";
         RiotHttpClient client = Mockito.mock(RiotHttpClient.class);
         Account account = new Account(client, Regions.AMERICAS, ShortRegions.BR1);
-        var uri = URI.create(String.format("/riot/account/v1/accounts/by-puuid/%s", puuid));
+        var uri = URIHelpers.createURI(
+                String.format("https://%s.api.riotgames.com", Regions.AMERICAS.name().toLowerCase()),
+                "/riot/account/v1/accounts/by-puuid/" + puuid
+        );
         Mockito.when(
                 client.get(
                         uri,
@@ -33,7 +37,10 @@ public class AccountTests {
         RiotHttpClient client = Mockito.mock(RiotHttpClient.class);
         Account.AccountDTO response = new Account.AccountDTO(puuid, "GAME-NAME", "5423");
         Account accountv1 = new Account(client, Regions.AMERICAS, ShortRegions.BR1);
-        var uri = URI.create(String.format("/riot/account/v1/accounts/by-puuid/%s", puuid));
+        var uri = URIHelpers.createURI(
+                String.format("https://%s.api.riotgames.com", Regions.AMERICAS.name().toLowerCase()),
+                "/riot/account/v1/accounts/by-puuid/" + puuid
+        );
         Mockito.when(
                 client.get(
                         uri,
@@ -55,7 +62,10 @@ public class AccountTests {
         String tagLine = "testTagLine";
         RiotHttpClient client = Mockito.mock(RiotHttpClient.class);
         Account.AccountDTO response = new Account.AccountDTO("test-puuid", gameName, String.format("#%s", tagLine));
-        var uri = URI.create(String.format("/riot/account/v1/accounts/by-riot-id/%s/%s", gameName, tagLine));
+        var uri = URIHelpers.createURI(
+                String.format("https://%s.api.riotgames.com", Regions.AMERICAS.name().toLowerCase()),
+                "/riot/account/v1/accounts/by-riot-id/" + gameName + "/" + tagLine
+        );
         Account accountv1 = new Account(client, Regions.AMERICAS, ShortRegions.BR1);
         Mockito.when(client.get(
                 uri,
@@ -76,7 +86,10 @@ public class AccountTests {
         String tagLine = "invalidTagLine";
         RiotHttpClient client = Mockito.mock(RiotHttpClient.class);
         Account accountApiV1 = new Account(client, Regions.AMERICAS, ShortRegions.BR1);
-        var uri = URI.create(String.format("/riot/account/v1/accounts/by-riot-id/%s/%s", gameName, tagLine));
+        var uri = URIHelpers.createURI(
+                String.format("https://%s.api.riotgames.com", Regions.AMERICAS.name().toLowerCase()),
+                "/riot/account/v1/accounts/by-riot-id/" + gameName + "/" + tagLine
+        );
         Mockito.when(client.get(
                         uri,
                         Account.AccountDTO.class
