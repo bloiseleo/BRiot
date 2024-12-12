@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.net.URI;
@@ -19,6 +18,25 @@ import java.util.Collection;
 import java.util.List;
 
 public class ChampionMaestryTests {
+    @Test
+    public void givenChampionMaestry_whenbyPuuidTotalScore_thenReturnTotalScore() {
+        String puuid = "PUUID";
+        URI uri = URIHelpers.createURI(
+                "https://br1.api.riotgames.com",
+                String.format("/lol/champion-mastery/v4/scores/by-puuid/%s", puuid)
+        );
+        RiotHttpClient riotHttpClient = Mockito.mock(RiotHttpClient.class);
+        ChampionMaestry championMaestry = new ChampionMaestry(
+                riotHttpClient, Regions.AMERICAS, ShortRegions.BR1
+        );
+        Mockito.when(
+                riotHttpClient.get(uri, Integer.class)
+        ).then(invocationOnMock -> 1);
+        Integer score = championMaestry.byPuuidScore(puuid);
+
+        Assertions.assertEquals(Integer.valueOf(1), score);
+        Mockito.verify(riotHttpClient, Mockito.times(1)).get(uri, Integer.class);
+    }
     @Test
     public void givenChampionMaestry_whenByPuuidTop_thenReturnChampionMaestryList() {
         String puuid = "PUUID";
