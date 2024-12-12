@@ -5,11 +5,12 @@ import briot.helpers.URIHelpers;
 import briot.models.Regions;
 import briot.models.ShortRegions;
 import briot.models.errors.NotFoundException;
+import briot.models.errors.RiotApiError;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
-
-import java.net.URI;
 
 public class AccountTests {
     @Test
@@ -80,8 +81,9 @@ public class AccountTests {
         Assertions.assertEquals(response.tagLine(), accountDTO.tagLine());
         Mockito.verify(client, Mockito.times(1)).get(uri, Account.AccountDTO.class);
     }
-    @Test
-    public void  givenInvalidGameNameAndTagLine_whenByRiotId_thenThrowNotFound() {
+    @ParameterizedTest
+    @MethodSource("briot.ErrorArgumentFactory#errorFactory")
+    public void  givenInvalidGameNameAndTagLine_whenByRiotId_thenThrowError(Class<? extends RiotApiError> riotApiError) {
         String gameName = "invalidGameName";
         String tagLine = "invalidTagLine";
         RiotHttpClient client = Mockito.mock(RiotHttpClient.class);
@@ -94,7 +96,7 @@ public class AccountTests {
                         uri,
                         Account.AccountDTO.class
                 )
-        ).thenThrow(NotFoundException.class);
-        Assertions.assertThrowsExactly(NotFoundException.class, () -> accountApiV1.byRiotId(gameName, tagLine));
+        ).thenThrow(riotApiError);
+        Assertions.assertThrowsExactly(riotApiError, () -> accountApiV1.byRiotId(gameName, tagLine));
     }
 }
