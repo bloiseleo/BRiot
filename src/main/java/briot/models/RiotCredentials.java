@@ -1,5 +1,5 @@
 package briot.models;
 
-public record RiotCredentials(String apiKey, Regions region) {
+public record RiotCredentials(String apiKey, Regions region, ShortRegions shortRegion) {
 
 }
