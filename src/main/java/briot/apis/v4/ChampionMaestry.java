@@ -43,4 +43,15 @@ public class ChampionMaestry extends RiotAPI {
         TypeToken<Collection<ChampionMaestryDTO>> collectionTypeToken = new TypeToken<>() {};
         return client.get(uri, collectionTypeToken);
     }
+    public ChampionMaestryDTO byPuuidAndChampionId(String puuid, int championId) {
+        var uri = createUriFromRouteAndShortRegion(
+                String.format("/lol/champion-mastery/v4/champion-masteries/by-puuid/%s/by-champion/%s", puuid, championId), shortRegion
+        );
+        return client.get(uri, ChampionMaestryDTO.class);
+    }
+    public Collection<ChampionMaestryDTO> byPuuidTop(String puuid) {
+        var uri = createUriFromRouteAndShortRegion("/lol/champion-mastery/v4/champion-masteries/by-puuid/" + puuid + "/top", shortRegion);
+        TypeToken<Collection<ChampionMaestryDTO>> collectionTypeToken = new TypeToken<>() {};
+        return client.get(uri, collectionTypeToken);
+    }
 }
