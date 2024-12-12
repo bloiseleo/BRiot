@@ -4,5 +4,6 @@ public enum Regions {
     AMERICAS,
     ASIA,
     ESPORTS,
-    EUROPE
+    EUROPE,
+    SEA
 }
