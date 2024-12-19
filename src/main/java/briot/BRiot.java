@@ -1,5 +1,6 @@
 package briot;
 
+import briot.apis.DataDragonAPI;
 import briot.apis.v1.Account;
 import briot.apis.v4.ChampionMaestry;
 import briot.models.Regions;
