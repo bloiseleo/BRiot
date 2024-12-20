@@ -1,5 +1,6 @@
 package briot.apis;
 
+import briot.events.DataDragonObservableThread;
 import briot.helpers.URIHelpers;
 import briot.models.errors.BadRequestException;
 import briot.models.errors.InternalServerErrorException;
@@ -48,6 +49,20 @@ public class DataDragonAPI {
             throw exception;
         } catch (Exception exception) {
             throw new RuntimeException(exception);
+        }
+    }
+    public void dragonTail(String version, DataDragonObservableThread.HandleDataDragonDownloadObserver handleDataDragonDownloadFinished) {
+        URI uri = URIHelpers.createURI(baseUrl, "/cdn/dragontail-" + version + ".tgz");
+        try {
+            HttpRequest request = HttpRequest.newBuilder(uri).GET().build();
+            HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            DataDragonObservableThread dataDragonObservableThread = new DataDragonObservableThread(response, "dragontail-" + version);
+            dataDragonObservableThread.observe(handleDataDragonDownloadFinished);
+            dataDragonObservableThread.start();
+        } catch (RiotApiError exception) {
+            throw exception;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
